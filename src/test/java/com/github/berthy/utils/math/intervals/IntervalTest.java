@@ -1,7 +1,5 @@
 package com.github.berthy.utils.math.intervals;
 
-import com.github.berthy.utils.math.Arithmetic;
-import com.github.berthy.utils.math.intervals.Interval;
 import org.junit.Test;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
