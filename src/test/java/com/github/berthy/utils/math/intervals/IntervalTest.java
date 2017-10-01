@@ -1,9 +1,13 @@
 package com.github.berthy.utils.math.intervals;
 
+import com.github.berthy.utils.math.Arithmetic;
 import com.github.berthy.utils.math.intervals.Interval;
 import org.junit.Test;
 import org.junit.Assert;
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
+import org.junit.Ignore;
 
 /**
  * @author Bertrand COTE
@@ -19,6 +23,7 @@ public class IntervalTest {
     static double[][] sqrtTest;
     static double[][] powIntTest;
     static double[][] powTests;
+    static double[][] intersectionUnionTests;
     
     static {
         //                         Xmin  Xmax  Ymin  Ymax +min  +max   -min   -max  *min  *max  /min     /max
@@ -84,16 +89,22 @@ public class IntervalTest {
                                    {  2.,  3.,  1./81.,  1./16.,  1./27., 1./8.,   1./9.,  1./4.,  1./3.,  1./2., 1., 1.,  2.,  3.,  4.,  9.,   8.,  27.,  16.,  81. }, 
                                    { -3., -2.,  1./16.,  1./81., -1./8., -1./27.,  1./4.,  1./9., -1./2., -1./3., 1., 1., -3., -2.,  4.,  9., -27.,  -8.,  16.,  81. } };
         
-    }
-    
-    public IntervalTest() {
+        intersectionUnionTests = new double[][] {
+            // for boolean results: 0. ==> false, 1. ==> true
+            // this_min, this_max, other_min,other_max, isSubset, intersects, inter_min, inter_max, union_min, union_max
+            { 1., 3., 2., 4., 0., 1., 2., 3., 1., 4. }, // intersect but not subset
+            { 1., 3., 2., 2.5, 1., 1., 2., 2.5, 1., 3. }, // intersect and subset
+            { 1., 3., -2., -1., 0., 0., Double.NaN, Double.NaN, Double.NaN, Double.NaN }, // no intersection
+            { 1., 3., 3., 4., 0., 1., 3., 3., 1., 4. }, // a common bound
+
+        };
     }
 
     /**
      * Test of getMin method, of class Interval.
      */
     @Test
-    public void testGetMin() {
+    public void testGetMinBound() {
         double expResult, result;
         for( double[] test : tests ) {
             
@@ -114,7 +125,7 @@ public class IntervalTest {
      * Test of getMax method, of class Interval.
      */
     @Test
-    public void testGetMax() {
+    public void testGetMaxBound() {
         double expResult, result;
         for( double[] test : tests ) {
             
@@ -622,7 +633,7 @@ public class IntervalTest {
         t = false;
         try {
             a.pow(-1);
-        } catch ( IllegalArgumentException iae ) {
+        } catch ( ArithmeticException ae ) {
             t = true;
         }
         if( t ) { // here an exception mustn't de thrown
@@ -669,7 +680,6 @@ public class IntervalTest {
      */
     @Test
     public void testIntersects() {
-        System.out.println("intersect");
         
         Interval.resetEpsilon();
         Interval instance = new Interval(-7., 5.);
@@ -709,6 +719,108 @@ public class IntervalTest {
         expResult = false;
         result = instance.intersects(other);
         assertTrue(expResult == result);
+    }
+
+    /**
+     * Test of intersection method, of class Interval.
+     */
+    @Test
+    public void testIntersection() {
+        
+        for( double[] test : intersectionUnionTests ) {
+            Interval other = new Interval( test[2], test[3] );
+            Interval instance = new Interval( test[0], test[1] );
+            Interval result = instance.intersection( other );
+            Interval expResult;
+            
+            if( test[5] == 1. ) {
+                expResult = new Interval( test[6], test[7] );
+                assertEquals( expResult.getMinBound(), result.getMinBound(), epsilon );
+                assertEquals( expResult.getMaxBound(), result.getMaxBound(), epsilon );
+            } else {
+                expResult = null;
+                assertTrue( expResult == result );
+            }
+        }
+    }
+
+    /**
+     * Test of union method, of class Interval.
+     */
+    @Test
+    public void testUnion() {
+        
+        for( double[] test : intersectionUnionTests ) {
+            Interval other = new Interval( test[2], test[3] );
+            Interval instance = new Interval( test[0], test[1] );
+            Interval result = instance.union( other );
+            Interval expResult;
+        
+            if( test[5] == 1. ) {
+                expResult = new Interval( test[8], test[9] );
+                assertEquals( expResult.getMinBound(), result.getMinBound(), epsilon );
+                assertEquals( expResult.getMaxBound(), result.getMaxBound(), epsilon );
+            } else {
+                expResult = null;
+                assertTrue( expResult == result );
+            }
+        }
+    }
+
+    /**
+     * Test of hashCode method, of class Interval.
+     */
+    @Test
+    @Ignore
+    public void testHashCode() {
+        System.out.println("hashCode");
+        Interval instance = new Interval();
+        int expResult = 0;
+        int result = instance.hashCode();
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of equals method, of class Interval.
+     */
+    @Test
+    @Ignore
+    public void testEquals() {
+        System.out.println("equals");
+        Object obj = null;
+        Interval instance = new Interval();
+        boolean expResult = false;
+        boolean result = instance.equals(obj);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of setEpsilon method, of class Interval.
+     */
+    @Test
+    @Ignore
+    public void testSetEpsilon() {
+        System.out.println("setEpsilon");
+        double epsilon = 0.0;
+        Interval.setEpsilon(epsilon);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of resetEpsilon method, of class Interval.
+     */
+    @Test
+    @Ignore
+    public void testResetEpsilon() {
+        System.out.println("resetEpsilon");
+        Interval.resetEpsilon();
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
     }
 }
 

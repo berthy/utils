@@ -12,6 +12,8 @@ import com.github.berthy.utils.util.Arrays;
  * 
  * https://en.wikipedia.org/wiki/Interval_arithmetic
  * 
+ * Here Intervals are unmutable objects.
+ * 
  * @author Bertrand COTE
  */
 
@@ -377,7 +379,7 @@ public class Interval implements Arithmetic {
         return result;
     }
     
-    // ----------  ----------
+    // ---------- intersection and union ----------
     
     /**
      * Check if the interval is a subset of other.
@@ -389,11 +391,36 @@ public class Interval implements Arithmetic {
         return other.minBound<=this.minBound && other.maxBound>=this.maxBound;
     }
     
-    
+    /**
+     * Checks if this interval have a common range with other.
+     * 
+     * @param other
+     * @return true if ther is a common range.
+     */
     public boolean intersects( Interval other ) {
-        final double maxOfMins = Math.max(this.minBound, other.minBound );
-        final double minOfMaxs = Math.min(this.maxBound, other.maxBound );
+        final double maxOfMins = Math.max( this.minBound, other.minBound );
+        final double minOfMaxs = Math.min( this.maxBound, other.maxBound );
         return maxOfMins <= minOfMaxs;
+    }
+    
+    
+    
+    public Interval intersection( Interval other ) {
+        if( this.intersects(other) ) {
+            final double min = Math.max( this.minBound, other.minBound );
+            final double max = Math.min( this.maxBound, other.maxBound );
+            return new Interval( min, max );
+        }
+        return null;
+    }
+    
+    public Interval union( Interval other ) {
+        if( this.intersects(other) ) {
+            final double min = Math.min( this.minBound, other.minBound );
+            final double max = Math.max( this.maxBound, other.maxBound );
+            return new Interval( min, max );
+        }
+        return null;
     }
     
     // =========================================================================
@@ -425,6 +452,7 @@ public class Interval implements Arithmetic {
     
     /**
      * String representation of the interval.
+     * 
      * @return the string representation of the interval.
      */
     @Override
