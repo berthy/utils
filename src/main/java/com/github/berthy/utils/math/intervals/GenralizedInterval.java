@@ -11,6 +11,23 @@ import java.util.Objects;
  */
 public class GenralizedInterval implements Arithmetic {
     
+    // =========================================================================
+    // ========== static constants =============================================
+    // =========================================================================
+    
+    /**
+     * Neutral element for add and subtract operator.
+     */
+    public static final GenralizedInterval ZERO = new GenralizedInterval( Interval.ZERO );
+    /**
+     * Neutral element for mult and div operator.
+     */
+    public static final GenralizedInterval ONE = new GenralizedInterval( Interval.ONE );
+    
+    // =========================================================================
+    // ========== class variables ==============================================
+    // =========================================================================
+    
     private List<Interval> intervals;
     
     // =========================================================================
@@ -53,13 +70,13 @@ public class GenralizedInterval implements Arithmetic {
      */
     public GenralizedInterval put( Interval interval ) {
         
+        if( interval == null )
+            return this;
+        
         if( this.intervals.isEmpty() )
             return new GenralizedInterval( interval );
         
-        
-        
         List<Interval> result = new ArrayList<>();
-        
         int i = 0;
         
         for( ; i<this.intervals.size(); i++ ) {
@@ -102,7 +119,16 @@ public class GenralizedInterval implements Arithmetic {
     // =========================================================================
     
     public GenralizedInterval union( GenralizedInterval other ) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if( other == null )
+            return this;
+        
+        GenralizedInterval result = this;
+        
+        for( Interval interval : other.intervals )
+            result = result.put( interval );
+        
+        return result;
     }
     
     public GenralizedInterval intersection( GenralizedInterval other ) {
@@ -139,21 +165,33 @@ public class GenralizedInterval implements Arithmetic {
     // ---------- subtract ----------
 
     @Override
-    public Arithmetic subtract(Arithmetic other) {
+    public Arithmetic subtract( Arithmetic other ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Arithmetic subtract( double d ) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     // ---------- mult ----------
 
     @Override
-    public Arithmetic mult(Arithmetic other) {
+    public Arithmetic mult( Arithmetic other ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Arithmetic mult( double d ) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
     // ---------- divide ----------
 
     @Override
-    public Arithmetic divide(Arithmetic other) {
+    public Arithmetic divide( Arithmetic other ) {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    
+    public Arithmetic divide( double d ) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
@@ -161,30 +199,30 @@ public class GenralizedInterval implements Arithmetic {
 
     @Override
     public Arithmetic zero() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return GenralizedInterval.ZERO;
     }
 
     @Override
     public boolean isZero() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.equals( GenralizedInterval.ZERO );
     }
     
     // ---------- one ----------
 
     @Override
     public Arithmetic one() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return GenralizedInterval.ONE;
     }
 
     @Override
     public boolean isOne() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        return this.equals( GenralizedInterval.ONE );
     }
     
     // ---------- pow ----------
 
     @Override
-    public Arithmetic pow(int n) {
+    public Arithmetic pow( int n ) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
