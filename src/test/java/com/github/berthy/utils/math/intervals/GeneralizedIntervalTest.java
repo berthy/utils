@@ -17,6 +17,7 @@ public class GeneralizedIntervalTest {
     private final static double[][][][] EQUALS_TESTS;
     private final static double[][][][] COMPACT_INTERVALS_TESTS;
     private final static double[][][][] UNION_TESTS;
+    private final static double[][][][] INTERSECTION_TESTS;
     
     static {
         PUT_TESTS = new double[][][][] {
@@ -109,10 +110,37 @@ public class GeneralizedIntervalTest {
             {
                 // instance
                 { { -5., -3. }, { -1., 2 }, { 3., 6. } },
-                // interval to put
+                // other
                 { { -2., -1. } , { 1., 10. } },
                 // expectedResult
                 { { -5., -3. }, { -2., 10 } }
+            },
+        };
+        
+        INTERSECTION_TESTS = new double[][][][] {
+            {
+                // instance
+                { { -5., -3. }, { -1., 2 }, { 3., 6. } },
+                // other
+                { { -10., -7. }, { -2., -1.5 } },
+                // expectedResult
+                {  }
+            },
+            {
+                // instance
+                { { -6., -4. }, { -1., 2 }, { 5., 7. } },
+                // other
+                { { -5., 0. } , { 4., 10. } },
+                // expectedResult
+                { { -5., -4. }, { -1., 0. }, { 5., 7. } }
+            },
+            {
+                // instance
+                { { -6., -4. }, { -1., 2 }, { 5., 7. } },
+                // other
+                { { -10., 10. } },
+                // expectedResult
+                { { -6., -4. }, { -1., 2 }, { 5., 7. } }
             },
         };
         
@@ -221,16 +249,30 @@ public class GeneralizedIntervalTest {
      * Test of intersection method, of class GenralizedInterval.
      */
     @Test
-    @Ignore
     public void testIntersection() {
         System.out.println("intersection");
-        GeneralizedInterval other = null;
-        GeneralizedInterval instance = new GeneralizedInterval();
-        GeneralizedInterval expResult = null;
-        GeneralizedInterval result = instance.intersection(other);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        for( double[][][] test : INTERSECTION_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            List<Interval> listOther = new ArrayList<>();
+            for( double[] inter : test[1] )
+                listOther.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval other = new GeneralizedInterval( listOther );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[2] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            GeneralizedInterval result = instance.intersection(other);
+            
+            assertEquals( expResult, result );
+        }
     }
 
     /**
