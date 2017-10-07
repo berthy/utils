@@ -4,7 +4,6 @@ import com.github.berthy.utils.math.Arithmetic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.function.Consumer;
 
 /**
  *
@@ -71,38 +70,12 @@ public class GeneralizedInterval implements Arithmetic {
      */
     public GeneralizedInterval put( Interval interval ) {
         
-        if( interval == null )
-            return this;
+        List<Interval> resultIntervals = new ArrayList<>();
         
-        if( this.intervals.isEmpty() )
-            return new GeneralizedInterval( interval );
+        resultIntervals.addAll( this.intervals );
+        resultIntervals.add( interval );
         
-        List<Interval> result = new ArrayList<>();
-        int i = 0;
-        
-        for( ; i<this.intervals.size(); i++ ) {
-            if(    interval.getMaxBound() < this.intervals.get( i ).getMinBound()
-                || interval.intersects( this.intervals.get( i ) ) 
-                ) {
-                break;
-            }
-        }
-        
-        result.addAll( this.intervals.subList( 0, i ) );
-        
-        for( ; i<this.intervals.size(); i++ ) {
-            if( interval.intersects( this.intervals.get( i ) ) ) {
-                interval = interval.union( this.intervals.get( i ) );
-            } else {
-                break;
-            }
-        }
-        
-        result.add( interval );
-        
-        result.addAll( this.intervals.subList( i, this.intervals.size() ) );
-        
-        return new GeneralizedInterval( result );
+        return new GeneralizedInterval( resultIntervals );
     }
     
     /**
