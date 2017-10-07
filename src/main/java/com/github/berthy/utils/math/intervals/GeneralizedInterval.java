@@ -4,6 +4,7 @@ import com.github.berthy.utils.math.Arithmetic;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 /**
  *
@@ -48,9 +49,8 @@ public class GeneralizedInterval implements Arithmetic {
     }
     
     /**
-     * WARNING: this "intervals" argument list must be sorted (see sort() method)
      * 
-     * @param intervals (must be sorted)
+     * @param intervals
      */
     public GeneralizedInterval( List<Interval> intervals ) {
         this();
@@ -186,17 +186,18 @@ public class GeneralizedInterval implements Arithmetic {
             
             GeneralizedInterval otherGeneralized = (GeneralizedInterval)other;
             
-            for( Interval intervalThis : this.intervals ) {
-                for( Interval intervalOther : otherGeneralized.intervals ) {
+            this.intervals.stream().forEach((Interval intervalThis) -> {
+                otherGeneralized.intervals.stream().forEach((Interval intervalOther) -> {
                     resultIntervals.add( intervalThis.add( intervalOther ) );
-                }
-            }
+                });
+            });
             
         } else if( other instanceof Interval ) {
             
             Interval otherInterval = (Interval)other;
-            for( Interval interval : this.intervals )
+            this.intervals.stream().forEach((Interval interval) -> {
                 resultIntervals.add( interval.add( otherInterval ) );
+            });
             
         } else {
             
@@ -212,9 +213,10 @@ public class GeneralizedInterval implements Arithmetic {
             return this;
         
         List<Interval> resultIntervals = new ArrayList<>();
-        for( Interval interval : this.intervals ) {
+        this.intervals.stream().forEach((Interval interval) -> {
             resultIntervals.add( interval.add( d ) );
-        }
+        });
+        
         return new GeneralizedInterval( resultIntervals );
     }
     
@@ -227,9 +229,29 @@ public class GeneralizedInterval implements Arithmetic {
             return this;
         
         List<Interval> resultIntervals = new ArrayList<>();
-        for( Interval interval : this.intervals ) {
-            resultIntervals.add( interval.subtract( other ) );
+        
+        if( other instanceof GeneralizedInterval ) {
+            
+            GeneralizedInterval otherGeneralized = (GeneralizedInterval)other;
+            
+            this.intervals.stream().forEach((Interval intervalThis) -> {
+                otherGeneralized.intervals.stream().forEach((Interval intervalOther) -> {
+                    resultIntervals.add( intervalThis.subtract( intervalOther ) );
+                });
+            });
+            
+        } else if( other instanceof Interval ) {
+            
+            Interval otherInterval = (Interval)other;
+            this.intervals.stream().forEach((Interval interval) -> {
+                resultIntervals.add( interval.subtract( otherInterval ) );
+            });
+            
+        } else {
+            
+            throw new IllegalArgumentException( "other is not instance of Interval or GeneralizedInterval" );
         }
+        
         return new GeneralizedInterval( resultIntervals );
     }
     
@@ -239,9 +261,10 @@ public class GeneralizedInterval implements Arithmetic {
             return this;
         
         List<Interval> resultIntervals = new ArrayList<>();
-        for( Interval interval : this.intervals ) {
+        this.intervals.stream().forEach((Interval interval) -> {
             resultIntervals.add( interval.subtract( d ) );
-        }
+        });
+        
         return new GeneralizedInterval( resultIntervals );
     }
     
@@ -253,7 +276,31 @@ public class GeneralizedInterval implements Arithmetic {
         if( other.isOne() )
             return this;
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Interval> resultIntervals = new ArrayList<>();
+        
+        if( other instanceof GeneralizedInterval ) {
+            
+            GeneralizedInterval otherGeneralized = (GeneralizedInterval)other;
+            
+            this.intervals.stream().forEach((Interval intervalThis) -> {
+                otherGeneralized.intervals.stream().forEach((Interval intervalOther) -> {
+                    resultIntervals.add( intervalThis.mult( intervalOther ) );
+                });
+            });
+            
+        } else if( other instanceof Interval ) {
+            
+            Interval otherInterval = (Interval)other;
+            this.intervals.stream().forEach((Interval interval) -> {
+                resultIntervals.add( interval.mult( otherInterval ) );
+            });
+            
+        } else {
+            
+            throw new IllegalArgumentException( "other is not instance of Interval or GeneralizedInterval" );
+        }
+        
+        return new GeneralizedInterval( resultIntervals );
     }
     
     public Arithmetic mult( double d ) {
@@ -261,13 +308,21 @@ public class GeneralizedInterval implements Arithmetic {
         if( d == 1. )
             return this;
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Interval> resultIntervals = new ArrayList<>();
+        this.intervals.stream().forEach((Interval interval) -> {
+            resultIntervals.add( interval.mult( d ) );
+        });
+        
+        return new GeneralizedInterval( resultIntervals );
     }
     
     // ---------- divide ----------
 
     @Override
     public Arithmetic divide( Arithmetic other ) {
+        
+        if( other.isZero() )
+            throw new ArithmeticException( "Divide by 0 exception" );
         
         if( other.isOne() )
             return this;
@@ -277,10 +332,18 @@ public class GeneralizedInterval implements Arithmetic {
     
     public Arithmetic divide( double d ) {
         
+        if( d == 0. )
+            throw new ArithmeticException( "Divide by 0 exception" );
+        
         if( d == 1. )
             return this;
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Interval> resultIntervals = new ArrayList<>();
+        this.intervals.stream().forEach((Interval interval) -> {
+            resultIntervals.add( interval.divide( d ) );
+        });
+        
+        return new GeneralizedInterval( resultIntervals );
     }
     
     // ---------- zero ----------
