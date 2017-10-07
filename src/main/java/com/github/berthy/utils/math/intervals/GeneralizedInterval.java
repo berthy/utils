@@ -124,16 +124,31 @@ public class GeneralizedInterval implements Arithmetic {
         if( other == null )
             return this;
         
-        GeneralizedInterval result = this;
+        List<Interval> resultIntervals = new ArrayList<>();
         
-        for( Interval interval : other.intervals )
-            result = result.put( interval );
+        resultIntervals.addAll( this.intervals );
+        resultIntervals.addAll( other.intervals );
         
-        return result;
+        return new GeneralizedInterval( resultIntervals );
     }
     
     public GeneralizedInterval intersection( GeneralizedInterval other ) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        
+        if( other == null )
+            return null;
+        
+        List<Interval> resultIntervals = new ArrayList<>();
+        
+        this.intervals.stream().forEach((Interval intervalThis) -> {
+            other.intervals.stream().forEach((Interval intervalOther) -> {
+                Interval inter = intervalThis.intersection( intervalOther );
+                if( inter != null) {
+                    resultIntervals.add(inter);
+                }
+            });
+        });
+        
+        return new GeneralizedInterval( resultIntervals );
     }
     
     // =========================================================================
