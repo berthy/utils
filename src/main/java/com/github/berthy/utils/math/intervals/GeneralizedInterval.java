@@ -182,10 +182,8 @@ public class GeneralizedInterval implements Arithmetic {
             
         } else if( other instanceof Interval ) {
             
-            Interval otherInterval = (Interval)other;
-            this.intervals.stream().forEach((Interval interval) -> {
-                resultIntervals.add( interval.add( otherInterval ) );
-            });
+            GeneralizedInterval otherGeneralizedInterval = new GeneralizedInterval( (Interval)other );
+            return this.add( otherGeneralizedInterval );
             
         } else {
             
@@ -230,10 +228,8 @@ public class GeneralizedInterval implements Arithmetic {
             
         } else if( other instanceof Interval ) {
             
-            Interval otherInterval = (Interval)other;
-            this.intervals.stream().forEach((Interval interval) -> {
-                resultIntervals.add( interval.subtract( otherInterval ) );
-            });
+            GeneralizedInterval otherGeneralizedInterval = new GeneralizedInterval( (Interval)other );
+            return this.subtract( otherGeneralizedInterval );
             
         } else {
             
@@ -278,10 +274,8 @@ public class GeneralizedInterval implements Arithmetic {
             
         } else if( other instanceof Interval ) {
             
-            Interval otherInterval = (Interval)other;
-            this.intervals.stream().forEach((Interval interval) -> {
-                resultIntervals.add( interval.mult( otherInterval ) );
-            });
+            GeneralizedInterval otherGeneralizedInterval = new GeneralizedInterval( (Interval)other );
+            return this.mult( otherGeneralizedInterval );
             
         } else {
             
