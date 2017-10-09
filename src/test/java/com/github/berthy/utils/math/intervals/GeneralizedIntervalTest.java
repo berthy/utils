@@ -18,6 +18,8 @@ public class GeneralizedIntervalTest {
     private final static double[][][][] COMPACT_INTERVALS_TESTS;
     private final static double[][][][] UNION_TESTS;
     private final static double[][][][] INTERSECTION_TESTS;
+    private final static double[][][][] OPERATOR_INTERVAL_TESTS;
+    private final static double[][][][] OPERATOR_GENERALIZED_TESTS;
     
     static {
         PUT_TESTS = new double[][][][] {
@@ -101,7 +103,7 @@ public class GeneralizedIntervalTest {
         UNION_TESTS = new double[][][][] {
             {
                 // instance
-                { { -5., -3. }, { -1., 2 }, { 3., 6. } },
+                { { -5., -3. }, { -1., 2. }, { 3., 6. } },
                 // other
                 { { -10., -7. }, { -2., -1. } },
                 // expectedResult
@@ -109,7 +111,7 @@ public class GeneralizedIntervalTest {
             },
             {
                 // instance
-                { { -5., -3. }, { -1., 2 }, { 3., 6. } },
+                { { -5., -3. }, { -1., 2. }, { 3., 6. } },
                 // other
                 { { -2., -1. } , { 1., 10. } },
                 // expectedResult
@@ -120,7 +122,7 @@ public class GeneralizedIntervalTest {
         INTERSECTION_TESTS = new double[][][][] {
             {
                 // instance
-                { { -5., -3. }, { -1., 2 }, { 3., 6. } },
+                { { -5., -3. }, { -1., 2. }, { 3., 6. } },
                 // other
                 { { -10., -7. }, { -2., -1.5 } },
                 // expectedResult
@@ -136,12 +138,44 @@ public class GeneralizedIntervalTest {
             },
             {
                 // instance
-                { { -6., -4. }, { -1., 2 }, { 5., 7. } },
+                { { -6., -4. }, { -1., 2. }, { 5., 7. } },
                 // other
                 { { -10., 10. } },
                 // expectedResult
                 { { -6., -4. }, { -1., 2 }, { 5., 7. } }
             },
+        };
+        
+        OPERATOR_INTERVAL_TESTS = new double[][][][] {
+            {
+                // instance
+                { { -6., -4. }, { -1., 2. }, { 5., 7. } },
+                // other
+                { { -5., -3. } },
+                // add expectedResult
+                { { -11.0, -7.0 }, { -6.0, -1.0 }, { 0.0, 4.0 } }
+            },
+            {
+                // instance
+                { { -6., -4. }, { -1., 2. }, { 5., 7. } },
+                // other
+                { { 4., 6. } },
+                // add expectedResult
+                { { -2.0, 2.0 }, { 3.0, 8.0 }, { 9.0, 13.0 } }
+            },
+            
+        };
+        
+        OPERATOR_GENERALIZED_TESTS = new double[][][][] {
+            {
+                // instance
+                { { -6., -4. }, { -1., 2. }, { 5., 7. } },
+                // other
+                { { -5., -3. } , { 4., 6. } },
+                // add expectedResult
+                { { -11.0, -7.0 }, { -6.0, 8.0 }, { 9.0, 13.0 } }
+            },
+            
         };
         
     }
@@ -279,16 +313,55 @@ public class GeneralizedIntervalTest {
      * Test of add method, of class GenralizedInterval.
      */
     @Test
-    @Ignore
     public void testAdd_Arithmetic() {
         System.out.println("add");
-        Arithmetic other = null;
-        GeneralizedInterval instance = new GeneralizedInterval();
-        Arithmetic expResult = null;
-        Arithmetic result = instance.add(other);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        for( double[][][] test : OPERATOR_INTERVAL_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            Interval other = new Interval( test[1][0][0], test[1][0][1] );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[2] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            
+            Arithmetic result = instance.add(other);
+            
+//            System.out.println( result );
+            
+            assertEquals(expResult, result);
+        }
+        
+        for( double[][][] test : OPERATOR_GENERALIZED_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            List<Interval> listOther = new ArrayList<>();
+            for( double[] inter : test[1] )
+                listOther.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval other = new GeneralizedInterval( listOther );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[2] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            
+            Arithmetic result = instance.add(other);
+            
+//            System.out.println( result );
+            
+            assertEquals(expResult, result);
+        }
     }
 
     /**
