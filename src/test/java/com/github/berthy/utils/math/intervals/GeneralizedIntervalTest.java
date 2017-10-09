@@ -153,7 +153,9 @@ public class GeneralizedIntervalTest {
                 // other
                 { { -5., -3. } },
                 // add expectedResult
-                { { -11.0, -7.0 }, { -6.0, -1.0 }, { 0.0, 4.0 } }
+                { { -11.0, -7.0 }, { -6.0, -1.0 }, { 0.0, 4.0 } },
+                // remove expectedResult
+                { { -3.0, 1.0 }, { 2.0, 7.0 }, { 8.0, 12.0 } }
             },
             {
                 // instance
@@ -161,7 +163,9 @@ public class GeneralizedIntervalTest {
                 // other
                 { { 4., 6. } },
                 // add expectedResult
-                { { -2.0, 2.0 }, { 3.0, 8.0 }, { 9.0, 13.0 } }
+                { { -2.0, 2.0 }, { 3.0, 8.0 }, { 9.0, 13.0 } },
+                // remove expectedResult
+                { { -12.0, -8.0 }, { -7.0, -2.0 }, { -1.0, 3.0 } }
             },
             
         };
@@ -173,7 +177,9 @@ public class GeneralizedIntervalTest {
                 // other
                 { { -5., -3. } , { 4., 6. } },
                 // add expectedResult
-                { { -11.0, -7.0 }, { -6.0, 8.0 }, { 9.0, 13.0 } }
+                { { -11.0, -7.0 }, { -6.0, 8.0 }, { 9.0, 13.0 } },
+                // remove expectedResult
+                { { -12.0, -8.0 }, { -7.0, 7.0 }, { 8.0, 12.0 } }
             },
             
         };
@@ -333,8 +339,6 @@ public class GeneralizedIntervalTest {
             
             Arithmetic result = instance.add(other);
             
-//            System.out.println( result );
-            
             assertEquals(expResult, result);
         }
         
@@ -358,8 +362,6 @@ public class GeneralizedIntervalTest {
             
             Arithmetic result = instance.add(other);
             
-//            System.out.println( result );
-            
             assertEquals(expResult, result);
         }
     }
@@ -381,27 +383,78 @@ public class GeneralizedIntervalTest {
     }
 
     /**
-     * Test of subtract method, of class GenralizedInterval.
+     * Test of subtract method, of class GeneralizedInterval.
+     */
+    @Test
+    public void testSubtract_Arithmetic() {
+        System.out.println("subtract");
+        
+        for( double[][][] test : OPERATOR_INTERVAL_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            Interval other = new Interval( test[1][0][0], test[1][0][1] );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[3] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            
+            Arithmetic result = instance.subtract(other);
+            
+            assertEquals(expResult, result);
+        }
+        
+        for( double[][][] test : OPERATOR_GENERALIZED_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            List<Interval> listOther = new ArrayList<>();
+            for( double[] inter : test[1] )
+                listOther.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval other = new GeneralizedInterval( listOther );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[3] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            
+            Arithmetic result = instance.subtract(other);
+            
+            assertEquals(expResult, result);
+        }
+    }
+
+    /**
+     * Test of subtract method, of class GeneralizedInterval.
      */
     @Test
     @Ignore
-    public void testSubtract() {
+    public void testSubtract_double() {
         System.out.println("subtract");
-        Arithmetic other = null;
+        double d = 0.0;
         GeneralizedInterval instance = new GeneralizedInterval();
         Arithmetic expResult = null;
-        Arithmetic result = instance.subtract(other);
+        Arithmetic result = instance.subtract(d);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
     }
 
     /**
-     * Test of mult method, of class GenralizedInterval.
+     * Test of mult method, of class GeneralizedInterval.
      */
     @Test
     @Ignore
-    public void testMult() {
+    public void testMult_Arithmetic() {
         System.out.println("mult");
         Arithmetic other = null;
         GeneralizedInterval instance = new GeneralizedInterval();
@@ -413,16 +466,48 @@ public class GeneralizedIntervalTest {
     }
 
     /**
-     * Test of divide method, of class GenralizedInterval.
+     * Test of mult method, of class GeneralizedInterval.
      */
     @Test
     @Ignore
-    public void testDivide() {
+    public void testMult_double() {
+        System.out.println("mult");
+        double d = 0.0;
+        GeneralizedInterval instance = new GeneralizedInterval();
+        Arithmetic expResult = null;
+        Arithmetic result = instance.mult(d);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of divide method, of class GeneralizedInterval.
+     */
+    @Test
+    @Ignore
+    public void testDivide_Arithmetic() {
         System.out.println("divide");
         Arithmetic other = null;
         GeneralizedInterval instance = new GeneralizedInterval();
         Arithmetic expResult = null;
         Arithmetic result = instance.divide(other);
+        assertEquals(expResult, result);
+        // TODO review the generated test code and remove the default call to fail.
+        fail("The test case is a prototype.");
+    }
+
+    /**
+     * Test of divide method, of class GeneralizedInterval.
+     */
+    @Test
+    @Ignore
+    public void testDivide_double() {
+        System.out.println("divide");
+        double d = 0.0;
+        GeneralizedInterval instance = new GeneralizedInterval();
+        Arithmetic expResult = null;
+        Arithmetic result = instance.divide(d);
         assertEquals(expResult, result);
         // TODO review the generated test code and remove the default call to fail.
         fail("The test case is a prototype.");
@@ -587,5 +672,4 @@ public class GeneralizedIntervalTest {
             
         }
     }
-    
 }
