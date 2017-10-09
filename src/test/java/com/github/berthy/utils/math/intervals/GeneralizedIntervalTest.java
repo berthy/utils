@@ -155,7 +155,9 @@ public class GeneralizedIntervalTest {
                 // add expectedResult
                 { { -11.0, -7.0 }, { -6.0, -1.0 }, { 0.0, 4.0 } },
                 // remove expectedResult
-                { { -3.0, 1.0 }, { 2.0, 7.0 }, { 8.0, 12.0 } }
+                { { -3.0, 1.0 }, { 2.0, 7.0 }, { 8.0, 12.0 } },
+                // mult expectedResult
+                { { -35.0, -15.0 }, { -10.0, 5.0 }, { 12.0, 30.0 } }
             },
             {
                 // instance
@@ -165,7 +167,9 @@ public class GeneralizedIntervalTest {
                 // add expectedResult
                 { { -2.0, 2.0 }, { 3.0, 8.0 }, { 9.0, 13.0 } },
                 // remove expectedResult
-                { { -12.0, -8.0 }, { -7.0, -2.0 }, { -1.0, 3.0 } }
+                { { -12.0, -8.0 }, { -7.0, -2.0 }, { -1.0, 3.0 } },
+                // mult expectedResult
+                { { -36.0, -16.0 }, { -6.0, 12.0 }, { 20.0, 42.0 } }
             },
             
         };
@@ -179,7 +183,9 @@ public class GeneralizedIntervalTest {
                 // add expectedResult
                 { { -11.0, -7.0 }, { -6.0, 8.0 }, { 9.0, 13.0 } },
                 // remove expectedResult
-                { { -12.0, -8.0 }, { -7.0, 7.0 }, { 8.0, 12.0 } }
+                { { -12.0, -8.0 }, { -7.0, 7.0 }, { 8.0, 12.0 } },
+                // mult expectedResult
+                { { -36.0, -15.0 }, { -10.0, 42.0 } }
             },
             
         };
@@ -453,16 +459,51 @@ public class GeneralizedIntervalTest {
      * Test of mult method, of class GeneralizedInterval.
      */
     @Test
-    @Ignore
     public void testMult_Arithmetic() {
         System.out.println("mult");
-        Arithmetic other = null;
-        GeneralizedInterval instance = new GeneralizedInterval();
-        Arithmetic expResult = null;
-        Arithmetic result = instance.mult(other);
-        assertEquals(expResult, result);
-        // TODO review the generated test code and remove the default call to fail.
-        fail("The test case is a prototype.");
+        
+        for( double[][][] test : OPERATOR_INTERVAL_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            Interval other = new Interval( test[1][0][0], test[1][0][1] );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[4] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            
+            Arithmetic result = instance.mult(other);
+            
+            assertEquals(expResult, result);
+        }
+        
+        for( double[][][] test : OPERATOR_GENERALIZED_TESTS ) {
+            
+            List<Interval> listInstance = new ArrayList<>();
+            for( double[] inter : test[0] )
+                listInstance.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval instance = new GeneralizedInterval( listInstance );
+            
+            List<Interval> listOther = new ArrayList<>();
+            for( double[] inter : test[1] )
+                listOther.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval other = new GeneralizedInterval( listOther );
+            
+            List<Interval> listExpResult = new ArrayList<>();
+            for( double[] inter : test[4] )
+                listExpResult.add( new Interval( inter[0], inter[1] ) );
+            GeneralizedInterval expResult = new GeneralizedInterval( listExpResult );
+            
+            
+            Arithmetic result = instance.mult(other);
+            
+            assertEquals(expResult, result);
+        }
     }
 
     /**
