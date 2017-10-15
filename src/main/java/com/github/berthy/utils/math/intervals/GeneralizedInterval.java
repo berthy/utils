@@ -309,7 +309,116 @@ public class GeneralizedInterval implements Arithmetic {
         if( other.isOne() )
             return this;
         
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        List<Interval> resultIntervals = new ArrayList<>();
+        
+        if( other instanceof GeneralizedInterval ) {
+            
+            GeneralizedInterval otherGeneralized = (GeneralizedInterval)other;
+            
+            for(Interval intervalThis : this.intervals ) {
+                for(Interval intervalOther : otherGeneralized.intervals ) {
+                    
+                    if( intervalOther.zeroElementOfThis() ) {
+                        
+                        // [a, b] ÷ [c, d] = [min(a ÷ c, a ÷ d, b ÷ c, b ÷ d), max(a ÷ c, a ÷ d, b ÷ c, b ÷ d)]
+                        // when 0 is not in [c, d].
+                        //
+                        // If 0 is in [c, d]:
+                        //
+                        //      If 0 not in [a, b]:
+                        //
+                        //      [a, b] ÷ [c, d] = [a, b] ÷ { [c, -0], [0+, d] }
+                        //
+                        //      [a, b] ÷ [c, 0-] = [min(a ÷ c, a ÷ -0, b ÷ c, b ÷ -0), max(a ÷ c, a ÷ -0, b ÷ c, b ÷ -0)]
+                        //
+                        //              a<0, b<0 ==> [min(a ÷ c, +Inf, b ÷ c, +Inf), max(a ÷ c, +Inf, b ÷ c, +Inf)]
+                        //                       ==> [min(a ÷ c, b ÷ c), +Inf]
+                        //
+                        //              a>0, b>0 ==> [min(a ÷ c, -Inf, b ÷ c, -Inf), max(a ÷ c, -Inf, b ÷ c, -Inf)]
+                        //                       ==> [-Inf, max(a ÷ c, b ÷ c)]
+                        //
+                        //otherGeneralized.intervals
+                        //      [a, b] ÷ [0+, d] = [min(a ÷ 0+, a ÷ d, b ÷ 0+, b ÷ d), max(a ÷ 0+, a ÷ d, b ÷ 0+, b ÷ d)]
+                        //
+                        //              a<0, b<0 ==> [min(-Inf, a ÷ d, -Inf, b ÷ d), max(-Inf, a ÷ d, -Inf, b ÷ d)]
+                        //                       ==> [-Inf, max(a ÷ d, b ÷ d)]
+                        //
+                        //              a>0, b>0 ==> [min(+Inf, a ÷ d, +Inf, b ÷ d), max(+Inf, a ÷ d, +Inf, b ÷ d)]
+                        //                       ==> [min(a ÷ d, b ÷ d), +Inf]
+                        //
+                        //      If 0 in [a, b]:
+                        //
+                        //      [a, b] ÷ [c, d] = { [a, -0], [0+, b] } ÷ { [c, -0], [0+, d] }
+                        //
+                        //          [a, -0] ÷ [c, -0] = [min(a ÷ c, +Inf,  0, 1), max(a ÷ c, +Inf,  0, 1)] = [0, +Inf]
+                        //          [a, -0] ÷ [0+, d] = [min(-Inf, a ÷ d, -1, 0), max(-Inf, a ÷ d, -1, 0)] = [-Inf, 0]
+                        //          [0+, b] ÷ [c, -0] = [min(0, -1, b ÷ c, -Inf), max(0, -1, b ÷ c, -Inf)] = [-Inf, 0]
+                        //          [0+, b] ÷ [0+, d] = [min(1,  0, +Inf, b ÷ d), max(1,  0, +Inf, b ÷ d)] = [0, +Inf]
+                        //
+                        //
+                        // finally if 0 is in [c, d]:
+                        //
+                        //      a<0, b<0 ==> [a, b] ÷ [c, d] = { [-Inf, max (a ÷ d, b ÷ d)], [min (a ÷ c, b ÷ c), +Inf] }
+                        //
+                        //      a>0, b>0 ==> [a, b] ÷ [c, d] = { [-Inf, max (a ÷ c, b ÷ c)], [min (a ÷ d, b ÷ d), +Inf] }
+                        //
+                        //      a<0, b>0 ==> [a, b] ÷ [c, d] = { [-Inf, +Inf] }
+                        //
+                        
+                        if( intervalThis.getMinBound() < 0 && intervalThis.getMaxBound() < 0 ) {
+                            
+                            resultIntervals.add( new Interval( Double.NEGATIVE_INFINITY, 
+                                                               Math.max( intervalThis.getMinBound()/intervalOther.getMaxBound(), 
+                                                                         intervalThis.getMaxBound()/intervalOther.getMaxBound()
+                                                                       ) 
+                                                             ) 
+                                                );
+                            resultIntervals.add( new Interval( Math.min( intervalThis.getMinBound()/intervalOther.getMinBound(), 
+                                                                         intervalThis.getMaxBound()/intervalOther.getMinBound()
+                                                                       ),
+                                                               Double.POSITIVE_INFINITY
+                                                             ) 
+                                                );
+                             
+                        } else if( intervalThis.getMinBound() > 0 && intervalThis.getMaxBound() > 0 ) {
+                            
+                            resultIntervals.add( new Interval( Double.NEGATIVE_INFINITY, 
+                                                               Math.max( intervalThis.getMinBound()/intervalOther.getMinBound(), 
+                                                                         intervalThis.getMaxBound()/intervalOther.getMinBound()
+                                                                       ) 
+                                                             ) 
+                                                );
+                            resultIntervals.add( new Interval( Math.min( intervalThis.getMinBound()/intervalOther.getMaxBound(), 
+                                                                         intervalThis.getMaxBound()/intervalOther.getMaxBound()
+                                                                       ),
+                                                               Double.POSITIVE_INFINITY
+                                                             ) 
+                                                );
+                             
+                        }  else { // here intervalThis.getMinBound() < 0 && intervalThis.getMaxBound() > 0
+                            
+                            return new GeneralizedInterval( new Interval( Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY ) );
+                        }
+                        
+                    } else {
+                        
+                        resultIntervals.add( intervalThis.divide( intervalOther ) );
+                    }
+                    
+                }
+            }
+            
+        } else if( other instanceof Interval ) {
+            
+            GeneralizedInterval otherGeneralizedInterval = new GeneralizedInterval( (Interval)other );
+            return this.mult( otherGeneralizedInterval );
+            
+        } else {
+            
+            throw new IllegalArgumentException( "other is not instance of Interval or GeneralizedInterval" );
+        }
+        
+        return new GeneralizedInterval( resultIntervals );
     }
     
     public Arithmetic divide( double d ) {
